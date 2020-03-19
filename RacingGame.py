@@ -10,20 +10,17 @@ python -m arcade.examples.sprite_move_keyboard_accel
 import arcade
 import os
 
-SPRITE_SCALING = 0.5
+SPRITE_SCALING = 1
 
-SCREEN_WIDTH = 1024
-SCREEN_HEIGHT = 768
-SCREEN_TITLE = "Better Move Sprite with Keyboard Example"
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 800
+SCREEN_TITLE = "2D Racing Game for AI"
 
 # Important constants for this example
-
 # Speed limit
-MAX_SPEED = 3.0
-
+MAX_SPEED = 5.0
 # How fast we accelerate
 ACCELERATION_RATE = 0.1
-
 # How fast to slow down after we letr off the key
 FRICTION = 0.02
 
@@ -58,10 +55,8 @@ class MyGame(arcade.Window):
         """
         Initializer
         """
-
         # Call the parent class initializer
         super().__init__(width, height, title)
-
         # Set the working directory (where we expect to find files) to the same
         # directory this .py file is in. You can leave this out of your own
         # code, but it is needed to easily run the examples using "python -m"
@@ -91,9 +86,9 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
 
         # Set up the player
-        self.player_sprite = Player(":resources:images/animated_characters/female_person/femalePerson_idle.png", SPRITE_SCALING)
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
+        self.player_sprite = Player(":resources:images/space_shooter/playerShip2_orange.png", SPRITE_SCALING)
+        self.player_sprite.center_x = 500
+        self.player_sprite.center_y = 500
         self.player_list.append(self.player_sprite)
 
     def on_draw(self):
