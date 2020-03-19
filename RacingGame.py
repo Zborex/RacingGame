@@ -1,49 +1,49 @@
 """
-Show how to use acceleration and friction
+Move Sprite by Angle
+
+Simple program to show basic sprite usage.
 
 Artwork from http://kenney.nl
 
 If Python and Arcade are installed, this example can be run from the command line with:
-python -m arcade.examples.sprite_move_keyboard_accel
+python -m arcade.examples.sprite_move_angle
 """
-
 import arcade
 import os
+import math
 
-SPRITE_SCALING = 1
+SPRITE_SCALING = 0.5
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
-SCREEN_TITLE = "2D Racing Game for AI"
+SCREEN_TITLE = "AI RACING"
 
-# Important constants for this example
-# Speed limit
-MAX_SPEED = 5.0
-# How fast we accelerate
-ACCELERATION_RATE = 0.1
-# How fast to slow down after we letr off the key
-FRICTION = 0.02
+MOVEMENT_SPEED = 5
+ANGLE_SPEED = 5
+
 
 class Player(arcade.Sprite):
+    """ Player class """
+
+    def __init__(self, image, scale):
+        """ Set up the player """
+
+        # Call the parent init
+        super().__init__(image, scale)
+
+        # Create a variable to hold our speed. 'angle' is created by the parent
+        self.speed = 0
 
     def update(self):
-        self.center_x += self.change_x
-        self.center_y += self.change_y
+        # Convert angle in degrees to radians.
+        angle_rad = math.radians(self.angle)
 
-        # Check to see if we hit the screen edge
-        if self.left < 0:
-            self.left = 0
-            self.change_x = 0 # Zero x speed
-        elif self.right > SCREEN_WIDTH - 1:
-            self.right = SCREEN_WIDTH - 1
-            self.change_x = 0
+        # Rotate the ship
+        self.angle += self.change_angle
 
-        if self.bottom < 0:
-            self.bottom = 0
-            self.change_y = 0
-        elif self.top > SCREEN_HEIGHT - 1:
-            self.top = SCREEN_HEIGHT - 1
-            self.change_y = 0
+        # Use math to find our change based on our speed and angle
+        self.center_x += -self.speed * math.sin(angle_rad)
+        self.center_y += self.speed * math.cos(angle_rad)
 
 
 class MyGame(arcade.Window):
@@ -55,8 +55,10 @@ class MyGame(arcade.Window):
         """
         Initializer
         """
+
         # Call the parent class initializer
         super().__init__(width, height, title)
+
         # Set the working directory (where we expect to find files) to the same
         # directory this .py file is in. You can leave this out of your own
         # code, but it is needed to easily run the examples using "python -m"
@@ -70,14 +72,8 @@ class MyGame(arcade.Window):
         # Set up the player info
         self.player_sprite = None
 
-        # Track the current state of what key is pressed
-        self.left_pressed = False
-        self.right_pressed = False
-        self.up_pressed = False
-        self.down_pressed = False
-
         # Set the background color
-        arcade.set_background_color(arcade.color.AMAZON)
+        arcade.set_background_color(arcade.color.BLACK)
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -86,9 +82,9 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
 
         # Set up the player
-        self.player_sprite = Player(":resources:images/space_shooter/playerShip2_orange.png", SPRITE_SCALING)
-        self.player_sprite.center_x = 500
-        self.player_sprite.center_y = 500
+        self.player_sprite = Player(":resources:images/space_shooter/playerShip1_orange.png", SPRITE_SCALING)
+        self.player_sprite.center_x = SCREEN_WIDTH / 2
+        self.player_sprite.center_y = SCREEN_HEIGHT / 2
         self.player_list.append(self.player_sprite)
 
     def on_draw(self):
@@ -102,75 +98,35 @@ class MyGame(arcade.Window):
         # Draw all the sprites.
         self.player_list.draw()
 
-        # Display speed
-        arcade.draw_text(f"X Speed: {self.player_sprite.change_x:6.3f}", 10, 50, arcade.color.BLACK)
-        arcade.draw_text(f"Y Speed: {self.player_sprite.change_y:6.3f}", 10, 70, arcade.color.BLACK)
-
     def on_update(self, delta_time):
         """ Movement and game logic """
 
-        # Add some friction
-        if self.player_sprite.change_x > FRICTION:
-            self.player_sprite.change_x -= FRICTION
-        elif self.player_sprite.change_x < -FRICTION:
-            self.player_sprite.change_x += FRICTION
-        else:
-            self.player_sprite.change_x = 0
-
-        if self.player_sprite.change_y > FRICTION:
-            self.player_sprite.change_y -= FRICTION
-        elif self.player_sprite.change_y < -FRICTION:
-            self.player_sprite.change_y += FRICTION
-        else:
-            self.player_sprite.change_y = 0
-
-        # Apply acceleration based on the keys pressed
-        if self.up_pressed and not self.down_pressed:
-            self.player_sprite.change_y += ACCELERATION_RATE
-        elif self.down_pressed and not self.up_pressed:
-            self.player_sprite.change_y += -ACCELERATION_RATE
-        if self.left_pressed and not self.right_pressed:
-            self.player_sprite.change_x += -ACCELERATION_RATE
-        elif self.right_pressed and not self.left_pressed:
-            self.player_sprite.change_x += ACCELERATION_RATE
-
-        if self.player_sprite.change_x > MAX_SPEED:
-            self.player_sprite.change_x = MAX_SPEED
-        elif self.player_sprite.change_x < -MAX_SPEED:
-            self.player_sprite.change_x = -MAX_SPEED
-        if self.player_sprite.change_y > MAX_SPEED:
-            self.player_sprite.change_y = MAX_SPEED
-        elif self.player_sprite.change_y < -MAX_SPEED:
-            self.player_sprite.change_y = -MAX_SPEED
-
-        # Call update to move the sprite
-        # If using a physics engine, call update on it instead of the sprite
-        # list.
+        # Call update on all sprites (The sprites don't do much in this
+        # example though.)
         self.player_list.update()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
 
+        # Forward/back
         if key == arcade.key.UP:
-            self.up_pressed = True
+            self.player_sprite.speed = MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
-            self.down_pressed = True
+            self.player_sprite.speed = -MOVEMENT_SPEED
+
+        # Rotate left/right
         elif key == arcade.key.LEFT:
-            self.left_pressed = True
+            self.player_sprite.change_angle = ANGLE_SPEED
         elif key == arcade.key.RIGHT:
-            self.right_pressed = True
+            self.player_sprite.change_angle = -ANGLE_SPEED
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
 
-        if key == arcade.key.UP:
-            self.up_pressed = False
-        elif key == arcade.key.DOWN:
-            self.down_pressed = False
-        elif key == arcade.key.LEFT:
-            self.left_pressed = False
-        elif key == arcade.key.RIGHT:
-            self.right_pressed = False
+        if key == arcade.key.UP or key == arcade.key.DOWN:
+            self.player_sprite.speed = 0
+        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
+            self.player_sprite.change_angle = 0
 
 
 def main():
