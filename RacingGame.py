@@ -1,26 +1,16 @@
-"""
-Move Sprite by Angle
 
-Simple program to show basic sprite usage.
-
-Artwork from http://kenney.nl
-
-If Python and Arcade are installed, this example can be run from the command line with:
-python -m arcade.examples.sprite_move_angle
-"""
 import arcade
 import os
 import math
 
-SPRITE_SCALING = 0.5
+SPRITE_SCALING = .25
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = "AI RACING"
 
-MOVEMENT_SPEED = 5
-ANGLE_SPEED = 5
-
+MOVEMENT_SPEED = 1
+ANGLE_SPEED = 3
 
 class Player(arcade.Sprite):
     """ Player class """
@@ -73,7 +63,7 @@ class MyGame(arcade.Window):
         self.player_sprite = None
 
         # Set the background color
-        arcade.set_background_color(arcade.color.BLACK)
+
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -87,6 +77,16 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = SCREEN_HEIGHT / 2
         self.player_list.append(self.player_sprite)
 
+    def on_resize(self, width, height):
+        """ This method is automatically called when the window is resized. """
+
+        # Call the parent. Failing to do this will mess up the coordinates, and default to 0,0 at the center and the
+        # edges being -1 to 1.
+        super().on_resize(width, height)
+
+        print(f"Window resized to: {width}, {height}")
+
+
     def on_draw(self):
         """
         Render the screen.
@@ -95,8 +95,85 @@ class MyGame(arcade.Window):
         # This command has to happen before we start drawing
         arcade.start_render()
 
+        arcade.set_background_color(arcade.color.BLACK)
+        point_list =((477,629),
+                    (122,639),
+                    (89,623),
+                    (75,598),
+                    (84,558),
+                    (104,523),
+                    (108,493),
+                    (90,459),
+                    (57,430),
+                    (37,201),
+                    (47,177),
+                    (87,159),
+                    (743,118),
+                    (792,134),
+                    (823,197),
+                    (799,259),
+                    (734,298),
+                    (701,295),
+                    (388,194),
+                    (337,205),
+                    (307,242),
+                    (265,263),
+                    (131,284),
+                    (133,305),
+                    (239,537),
+                    (253,557),
+                    (288,564),
+                    (692,580),
+                    (727,579),
+                    (745,555),
+                    (743,509),
+                    (710,486),
+                    (525,432),
+                    (474,439),
+                    (363,477),
+                    (349,459),
+                    (347,349),
+                    (376,338),
+                    (764,441),
+                    (855,613)
+                    )
+        arcade.draw_polygon_outline(point_list, arcade.color.WHITE, 2)
+        point_list =((479,662),
+                    (133,669),
+                    (73,648),
+                    (50,615),
+                    (47,565),
+                    (78,499),
+                    (24,441),
+                    (9,173),
+                    (69,135),
+                    (753,91),
+                    (831,129),
+                    (858,209),
+                    (830,278),
+                    (759,321),
+                    (713,335),
+                    (677,321),
+                    (402,223),
+                    (359,223),
+                    (317,272),
+                    (169,309),
+                    (268,533),
+                    (709,557),
+                    (723,537),
+                    (699,506),
+                    (524,452),
+                    (342,506),
+                    (317,481),
+                    (317,345),
+                    (343,309),
+                    (803,433),
+                    (892,639))
+        arcade.draw_polygon_outline(point_list, arcade.color.WHITE, 2)
         # Draw all the sprites.
         self.player_list.draw()
+        arcade.draw_text(f"X: {self.player_sprite.center_x:6.3f}", 10, 50, arcade.color.WHITE)
+        arcade.draw_text(f"Y: {self.player_sprite.center_y:6.3f}", 10, 70, arcade.color.WHITE)
 
     def on_update(self, delta_time):
         """ Movement and game logic """
