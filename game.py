@@ -30,10 +30,8 @@ def init():
 
     space.add(player_ship.body, player_ship.shape)
 
-    static_lines = [pymunk.Segment(space.static_body, (50, 110), (50, 800), 1),
-                    pymunk.Segment(space.static_body, (800, 110), (800, 800), 1)]
-    for line in static_lines:
-        line.friction = 1
+    static_lines = pymunk.Segment(space.static_body, (0, 0), (1000, 1000), 0.0)
+    static_lines.friction = 1
     space.add(static_lines)
 
 
