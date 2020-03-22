@@ -18,10 +18,11 @@ class Player(pyglet.sprite.Sprite):
         self.angle = 0
         self.mass = 10
         self.inertia = pymunk.moment_for_circle(self.mass, self.image.width / 2, 0.0, (0, 0))
-        self.body = pymunk.Body(self.mass, self.inertia)
+        self.body = pymunk.Body(self.mass, self.inertia, body_type=pymunk.Body.KINEMATIC)
         self.shape = pymunk.Circle(self.body, self.image.width / 2, (0, 0))
         self.shape.friction = 1
         self.body.position = self.x, self.y
+        self.shape.collision_type = 1
         self.key_handler = key.KeyStateHandler()
         self.event_handlers = [self, self.key_handler]
     def update(self, dt):
