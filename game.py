@@ -2,6 +2,8 @@ import pyglet
 import pymunk
 from pyglet.gl import gl
 from pymunk import Vec2d
+from pyglet.window import key
+from ai import ai
 
 from game import player
 
@@ -12,19 +14,17 @@ gl.glClearColor(*background_color)
 static_lines = []
 main_batch = pyglet.graphics.Batch()
 
+keys = key.KeyStateHandler()
+game_window.push_handlers(keys)
+
 speed_label = pyglet.text.Label(text="Speed: 0", x=10, y=750, batch=main_batch)
 xy_label = pyglet.text.Label(text="Position: ", x=10, y=730, batch=main_batch)
+mode_label = pyglet.text.Label(text="Manual mode", x=10, y=710, batch=main_batch)
+is_AI = False
 
 counter = pyglet.window.FPSDisplay(window=game_window)
 space = pymunk.Space()
 space.gravity = Vec2d(0.0, 0.0)
-static_lines = [pymunk.Segment(space.static_body, (11.0, 280.0), (407.0, 246.0), 0.0)
-    , pymunk.Segment(space.static_body, (407.0, 246.0), (407.0, 343.0), 0.0)
-                ]
-for l in static_lines:
-    l.collision_type = 2
-    l.friction = 0.5
-space.add(static_lines)
 player_ship = None
 event_stack_size = 0
 
@@ -45,6 +45,7 @@ def init():
 def collisionhandle():
     print("collisionDETECTED")
 
+
 @game_window.event
 def on_draw():
     game_window.clear()
@@ -59,6 +60,22 @@ def on_draw():
                              )
     main_batch.draw()
     counter.draw()
+
+
+@game_window.event
+def on_key_press(symbol, modifiers):
+    global is_AI, player_ship
+    if symbol == key.M:
+        if is_AI:
+            mode_label.text = 'Manual mode'
+            keys = key.KeyStateHandler()
+            game_window.push_handlers(keys)
+            player_ship.overdrive_key_handler(keys)
+            is_AI = False
+        else:
+            mode_label.text = 'AI mode'
+            player_ship.overdrive_key_handler(ai.get_key_handler())
+            is_AI = True
 
 
 def update(dt):

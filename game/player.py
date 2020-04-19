@@ -25,6 +25,11 @@ class Player(pyglet.sprite.Sprite):
         self.shape.collision_type = 1
         self.key_handler = key.KeyStateHandler()
         self.event_handlers = [self, self.key_handler]
+
+    def overdrive_key_handler(self, key_handler):
+        self.key_handler = key_handler
+        self.event_handlers = [self, self.key_handler]
+
     def update(self, dt):
         angle_rad = math.radians(self.rotation)
 
@@ -54,6 +59,7 @@ class Player(pyglet.sprite.Sprite):
         elif self.key_handler[key.DOWN]:
             self.speed -= self.base_acceleration * dt
         self.body.position = self.x, self.y
+
     def delete(self):
         self.engine_sprite.delete()
         super(Player, self).delete()
@@ -63,11 +69,17 @@ class Player(pyglet.sprite.Sprite):
         min_y = -self.image.height / 2
         max_x = 1360 + self.image.width / 2
         max_y = 768 + self.image.height / 2
-        if self.x < min_x:
-            self.x = max_x
-        if self.y < min_y:
-            self.y = max_y
-        if self.x > max_x:
-            self.x = min_x
-        if self.y > max_y:
-            self.y = min_y
+        if self.x < min_x + 30:
+            self.x = min_x + 30
+            self.friction = 30
+        elif self.y < min_y + 30:
+            self.y = min_y + 30
+            self.friction = 30
+        elif self.x > max_x - 30:
+            self.x = max_x - 30
+            self.friction = 30
+        elif self.y > max_y - 30:
+            self.y = max_y - 30
+            self.friction = 30.0
+        else:
+            self.friction = 6.0
